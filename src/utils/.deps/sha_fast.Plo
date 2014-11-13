@@ -1,0 +1,3 @@
+sha_fast.lo: sha_fast.cc ../../config.h
+
+../../config.h:

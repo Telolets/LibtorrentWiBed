@@ -129,7 +129,15 @@ resume.lo: resume.cc ../../../config.h ../../../rak/file_stat.h \
  ../tracker_list.h ../../globals.h ../../../rak/timer.h \
  /usr/include/c++/4.7/limits /usr/include/x86_64-linux-gnu/sys/time.h \
  ../../../rak/priority_queue_default.h ../../../rak/allocators.h \
- ../../../rak/priority_queue.h resume.h
+ ../../../rak/priority_queue.h resume.h /usr/include/c++/4.7/iostream \
+ /usr/include/c++/4.7/fstream /usr/include/c++/4.7/bits/codecvt.h \
+ /usr/include/c++/4.7/cstdio /usr/include/libio.h \
+ /usr/include/_G_config.h /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio.h \
+ /usr/include/c++/4.7/x86_64-linux-gnu/bits/basic_file.h \
+ /usr/include/c++/4.7/x86_64-linux-gnu/bits/c++io.h \
+ /usr/include/c++/4.7/bits/fstream.tcc ../../download/available_list.h
 
 ../../../config.h:
 
@@ -516,3 +524,29 @@ resume.lo: resume.cc ../../../config.h ../../../rak/file_stat.h \
 ../../../rak/priority_queue.h:
 
 resume.h:
+
+/usr/include/c++/4.7/iostream:
+
+/usr/include/c++/4.7/fstream:
+
+/usr/include/c++/4.7/bits/codecvt.h:
+
+/usr/include/c++/4.7/cstdio:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
+
+/usr/include/c++/4.7/x86_64-linux-gnu/bits/basic_file.h:
+
+/usr/include/c++/4.7/x86_64-linux-gnu/bits/c++io.h:
+
+/usr/include/c++/4.7/bits/fstream.tcc:
+
+../../download/available_list.h:

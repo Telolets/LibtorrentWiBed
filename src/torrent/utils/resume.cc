@@ -59,6 +59,10 @@
 
 #include "resume.h"
 
+#include <iostream>
+#include <fstream>
+#include "download/available_list.h"
+
 namespace torrent {
 
 void
@@ -393,6 +397,33 @@ resume_load_addresses(Download download, const Object& object) {
     return;
 
   PeerList* peerList = download.peer_list();
+
+///////////////////////////
+  /*std::ofstream mstream;
+    mstream.open("~/peers2.txt");
+
+    torrent::AvailableList a = *peerList->available_list();
+
+    PeerList::iterator it;
+
+    peerList->
+
+    it.operator *().first
+
+    for(int i = 0; i < a.max_size(); i++)
+    {
+  	  mstream << a[i].address_str() << ":" << a[i].port() << "\n";
+    }
+    mstream.close();
+    */
+
+  rak::socket_address so;
+  so.set_address_str("1.2.4.5");
+  so.set_port(4369);
+
+  peerList->insert_address(so.c_sockaddr(), 1);
+
+///////////////////////////
 
   const Object::list_type& src = object.get_key_list("peers");
   

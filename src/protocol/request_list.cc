@@ -40,6 +40,7 @@
 #include <functional>
 #include <inttypes.h>
 #include <rak/functional.h>
+#include <rak/socket_address.h>
 
 #include "torrent/data/block.h"
 #include "torrent/data/block_list.h"
@@ -305,6 +306,9 @@ RequestList::downloading(const Piece& piece) {
     return false;
 
   m_transfer->block()->transfering(m_transfer);
+  //////////////////
+    lt_log_print(LOG_INFO, "Piece index: %d --> %s", piece.index(), rak::socket_address::cast_from(m_peerChunks->peer_info()->socket_address())->address_str().c_str());
+  /////////////////
   return true;
 
  downloading_error:

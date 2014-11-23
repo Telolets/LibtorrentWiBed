@@ -54,6 +54,11 @@
 #include "peer_info.h"
 #include "peer_list.h"
 
+//////
+#include <fstream>
+#include <sstream>
+//////
+
 #define LT_LOG_EVENTS(log_fmt, ...)                                     \
   lt_log_print_info(LOG_PEER_LIST_EVENTS, m_info, "peer_list", log_fmt, __VA_ARGS__);
 #define LT_LOG_SA_FMT "'%s:%" PRIu16 "'"
@@ -159,6 +164,46 @@ PeerList::insert_address(const sockaddr* sa, int flags) {
 
   return peerInfo;
 }
+
+//////////////////////////
+void
+PeerList::sort_by_quality() {
+	std::multimap<int,std::string> batmanValue;
+	/*
+	std::ifstream infile("~/Downloads/value.txt");
+
+	lt_log_print(LOG_INFO, "inside the function");
+	int a;
+	std::string b;
+	char c;
+
+
+	std::string line;
+	while (std::getline(infile, line))
+	{
+		std::istringstream iss(line);
+		if (!(iss >> a >> c >> b) && (c == ',')) { break; } // error
+
+		lt_log_print(LOG_INFO, "%s with value of %d", b.c_str(), a);
+
+		batmanValue.insert(std::pair<int,std::string>(a,b));
+
+	}*/
+
+	batmanValue.insert(std::pair<int,std::string>(25,"83.172.114.9"));
+	batmanValue.insert(std::pair<int,std::string>(189,"83.172.114.61"));
+	batmanValue.insert(std::pair<int,std::string>(1,"83.172.115.218"));
+
+
+	//assume no more duplicate IP
+	for(std::multimap<int,std::string>::iterator it = batmanValue.begin(); it != batmanValue.end(); it++)
+	{
+		lt_log_print(LOG_INFO, "%s with value of %d", (*it).second.c_str(), (*it).first);
+	}
+
+}
+///////////////////////////
+
 
 inline bool
 socket_address_less_rak(const rak::socket_address& s1, const rak::socket_address& s2) {

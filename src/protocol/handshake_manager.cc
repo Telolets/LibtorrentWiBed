@@ -55,9 +55,9 @@
 #include "manager.h"
 
 #define LT_LOG_SA(log_level, sa, log_fmt, ...)                          \
-  lt_log_print(LOG_CONNECTION_##log_level, "handshake_manager->%s: " log_fmt, (sa)->address_str().c_str(), __VA_ARGS__);
+  lt_log_print(LOG_CONNECTION_##log_level, "handshake_manager wibed->%s: " log_fmt, (sa)->address_str().c_str(), __VA_ARGS__);
 #define LT_LOG_SA_C(log_level, sa, log_fmt, ...)                        \
-  lt_log_print(LOG_CONNECTION_##log_level, "handshake_manager->%s: " log_fmt, \
+  lt_log_print(LOG_CONNECTION_##log_level, "handshake_manager wibed->%s: " log_fmt, \
                reinterpret_cast<const rak::socket_address*>(sa)->address_str().c_str(), __VA_ARGS__);
 
 namespace torrent {

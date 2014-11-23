@@ -106,6 +106,7 @@ public:
 
   // This will be used internally only for the moment.
   uint32_t            insert_available(const void* al) LIBTORRENT_NO_EXPORT;
+  void				  sort_by_quality();
 
   static ipv4_table*  ipv4_filter() { return &m_ipv4_table; }
 

@@ -335,11 +335,35 @@ DownloadMain::receive_connect_peers() {
     alist->clear();
   }
 
+    peer_list()->sort_by_quality();
+
+  /*///////////////////////
+    std::string s("");
+    for (AvailableList::const_iterator itr = peer_list()->available_list()->begin(); itr != peer_list()->available_list()->end(); ++itr)
+    {
+  	  s += (*itr).address_str();
+  	  s += " -- ";
+    }
+
+    lt_log_print(LOG_INFO, "Peer list before choosing: %s", s.c_str());
+
+    //m_main->stop();
+    lt_log_print(LOG_INFO, "DOWNLOAD PAUSED");
+    //m_main->start();
+    //lt_log_print(LOG_INFO, "DOWNLOAD RESUMED");
+    /////////////////////////*/
+
   while (!peer_list()->available_list()->empty() &&
          manager->connection_manager()->can_connect() &&
          connection_list()->size() < connection_list()->min_size() &&
          connection_list()->size() + m_slotCountHandshakes(this) < connection_list()->max_size()) {
     rak::socket_address sa = peer_list()->available_list()->pop_random();
+
+    ////////////////////
+    //peer_list()->available_list()->buffer()->
+
+    //lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
+    ////////////////////
 
     if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
       m_slotStartHandshake(sa, this);

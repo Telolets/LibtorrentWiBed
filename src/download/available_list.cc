@@ -60,6 +60,28 @@ AvailableList::pop_random() {
   return tmp;
 }
 
+AvailableList::value_type
+AvailableList::pop_best(rak::socket_address& batman_address) {
+  if (empty())
+	throw internal_error("AvailableList::pop_best() called on an empty container");
+
+  value_type tmp;
+
+  for(iterator itr = begin(); itr != end(); itr++)
+  {
+	  if((*itr).address_str() == batman_address.address_str())
+	  {
+		  tmp = *(itr);
+		  *itr = back();
+		  pop_back();
+		  break;
+	  }
+  }
+
+  return tmp;
+
+}
+
 void
 AvailableList::push_back(const rak::socket_address* sa) {
   if (std::find(begin(), end(), *sa) != end())

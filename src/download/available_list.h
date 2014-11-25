@@ -74,6 +74,7 @@ public:
   AvailableList() : m_maxSize(1000) {}
 
   value_type          pop_random();
+  value_type		  pop_best(rak::socket_address& batman_val);
 
   // Fuzzy size limit.
   size_type           max_size() const                   { return m_maxSize; }

@@ -167,8 +167,7 @@ PeerList::insert_address(const sockaddr* sa, int flags) {
 
 //////////////////////////
 void
-PeerList::sort_by_quality() {
-	std::multimap<int,std::string> batmanValue;
+PeerList::updateBatmanAdv_value() {
 	/*
 	std::ifstream infile("~/Downloads/value.txt");
 
@@ -190,13 +189,18 @@ PeerList::sort_by_quality() {
 
 	}*/
 
-	batmanValue.insert(std::pair<int,std::string>(25,"83.172.114.9"));
-	batmanValue.insert(std::pair<int,std::string>(189,"83.172.114.61"));
-	batmanValue.insert(std::pair<int,std::string>(1,"83.172.115.218"));
+        if(batman_Value.empty())
+        {
 
+	        batman_Value.insert(std::pair<int,std::string>(255-254,"83.172.114.9")); //Debian-reimu
+
+	        batman_Value.insert(std::pair<int,std::string>(255-100,"83.172.114.81")); //joao
+
+            batman_Value.insert(std::pair<int,std::string>(255-1,"83.172.115.18")); //ken
+        }
 
 	//assume no more duplicate IP
-	for(std::multimap<int,std::string>::iterator it = batmanValue.begin(); it != batmanValue.end(); it++)
+	for(std::multimap<int,std::string>::iterator it = batman_Value.begin(); it != batman_Value.end(); it++)
 	{
 		lt_log_print(LOG_INFO, "%s with value of %d", (*it).second.c_str(), (*it).first);
 	}

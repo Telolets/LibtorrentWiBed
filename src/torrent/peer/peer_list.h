@@ -102,11 +102,15 @@ public:
   PeerList();
   ~PeerList();
 
+  ////////////////////
+  std::multimap<int,std::string> batman_Value;
+    /////////////////////
+
   PeerInfo*           insert_address(const sockaddr* address, int flags);
 
   // This will be used internally only for the moment.
   uint32_t            insert_available(const void* al) LIBTORRENT_NO_EXPORT;
-  void				  sort_by_quality();
+  void				  updateBatmanAdv_value();
 
   static ipv4_table*  ipv4_filter() { return &m_ipv4_table; }
 
@@ -119,6 +123,8 @@ public:
   const_iterator         end() const    { return base_type::end(); }
   const_reverse_iterator rbegin() const { return base_type::rbegin(); }
   const_reverse_iterator rend() const   { return base_type::rend(); }
+
+
 
 protected:
   void                set_info(DownloadInfo* info) LIBTORRENT_NO_EXPORT;
@@ -135,6 +141,8 @@ private:
   void operator = (const PeerList&);
 
   static ipv4_table   m_ipv4_table;
+
+
 
   DownloadInfo*       m_info;
   AvailableList*      m_available_list;

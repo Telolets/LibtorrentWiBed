@@ -37,6 +37,7 @@
 #include "config.h"
 
 #include <cstring>
+#include <sstream>
 #include <limits>
 
 #include "data/chunk_list.h"
@@ -335,23 +336,45 @@ DownloadMain::receive_connect_peers() {
     alist->clear();
   }
 
-    peer_list()->sort_by_quality();
+    peer_list()->updateBatmanAdv_value();
 
-  /*///////////////////////
+  ///////////////////////
     std::string s("");
     for (AvailableList::const_iterator itr = peer_list()->available_list()->begin(); itr != peer_list()->available_list()->end(); ++itr)
     {
+      std::stringstream out;
+      out << (*itr).port();
+
   	  s += (*itr).address_str();
+  	  s += ":";
+  	  s += out.str();
   	  s += " -- ";
+
     }
 
-    lt_log_print(LOG_INFO, "Peer list before choosing: %s", s.c_str());
+    lt_log_print(LOG_INFO, "Available list before choosing: %s", s.c_str());
+  /////////////////////////
 
-    //m_main->stop();
-    lt_log_print(LOG_INFO, "DOWNLOAD PAUSED");
-    //m_main->start();
-    //lt_log_print(LOG_INFO, "DOWNLOAD RESUMED");
-    /////////////////////////*/
+    ///////////////////////
+    s = "";
+        for (PeerList::const_iterator itr = peer_list()->begin(); itr != peer_list()->end(); ++itr)
+        {
+        	const rak::socket_address* soc2 = rak::socket_address::cast_from((*itr).second->socket_address());
+
+          std::stringstream out;
+          out << soc2->port();
+
+      	  s += soc2->address_str();
+      	  s += ":";
+      	  s += out.str();
+      	  s += " -- ";
+
+        }
+
+        lt_log_print(LOG_INFO, "Peer list before choosing: %s", s.c_str());
+      /////////////////////////
+
+  /*
 
   while (!peer_list()->available_list()->empty() &&
          manager->connection_manager()->can_connect() &&
@@ -359,15 +382,49 @@ DownloadMain::receive_connect_peers() {
          connection_list()->size() + m_slotCountHandshakes(this) < connection_list()->max_size()) {
     rak::socket_address sa = peer_list()->available_list()->pop_random();
 
-    ////////////////////
-    //peer_list()->available_list()->buffer()->
+  */
 
-    //lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
+  while (!peer_list()->available_list()->empty() &&
+		  !peer_list()->batman_Value.empty() &&  ////////////////ADDED
+		 manager->connection_manager()->can_connect() &&
+		 connection_list()->size() < connection_list()->min_size() &&
+		 connection_list()->size() + m_slotCountHandshakes(this) < connection_list()->max_size()) {
+
+	std::multimap<int,std::string>::iterator it = peer_list()->batman_Value.begin();
+	rak::socket_address* ba = new rak::socket_address();
+	ba->set_address_str(it->second);
+
+	lt_log_print(LOG_INFO, "###current best choice--> %s", it->second.c_str());
+
+	rak::socket_address sa = peer_list()->available_list()->pop_best(*ba);
+	peer_list()->batman_Value.erase(it);
+
+    ////////////////////
+    lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
+    lt_log_print(LOG_INFO, "Batman_value size left --> %d", peer_list()->batman_Value.size());
     ////////////////////
 
     if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
       m_slotStartHandshake(sa, this);
   }
+
+  ///////////////////////
+  s = "";
+  for (ConnectionList::iterator itr = connection_list()->begin(); itr != connection_list()->end(); ++itr)
+      {
+	  const rak::socket_address* soc = rak::socket_address::cast_from((*itr)->address());
+
+	  std::stringstream out;
+	  out << soc->port();
+
+      s += soc->address_str();
+	  s += ":";
+	  s += out.str();
+	  s += " -- ";
+      }
+
+      lt_log_print(LOG_INFO, "Current connection List: %s", s.c_str());
+  /////////////////////
 }
 
 void

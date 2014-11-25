@@ -259,21 +259,10 @@ DownloadWrapper::receive_tracker_success(AddressList* l) {
   uint32_t inserted = m_main->peer_list()->insert_available(l);
 
   ////////////////////////
-  m_main->stop();
-  lt_log_print(LOG_INFO, "DOWNLOAD PAUSED");
+  //m_main->stop();
+  //lt_log_print(LOG_INFO, "DOWNLOAD PAUSED");
 
   std::string s("");
-  /*
-  for (AvailableList::const_iterator itr = m_main->peer_list()->available_list()->begin(); itr != m_main->peer_list()->available_list()->end(); ++itr)
-  {
-	  s += (*itr).address_str();
-	  s += " -- ";
-  }
-
-  lt_log_print(LOG_INFO, "Peer list before choosing: %s", s.c_str());
-
-  s = "";
-  */
 
   for (AddressList::const_iterator itr = l->begin(); itr != l->end(); ++itr)
     {
@@ -284,8 +273,8 @@ DownloadWrapper::receive_tracker_success(AddressList* l) {
   lt_log_print(LOG_INFO, "Address list collected from tracker: %s", s.c_str());
 
 
-  m_main->start();
-  lt_log_print(LOG_INFO, "DOWNLOAD RESUMED");
+  //m_main->start();
+  //lt_log_print(LOG_INFO, "DOWNLOAD RESUMED");
   //////////////////////////
 
   m_main->receive_connect_peers();

@@ -188,7 +188,7 @@ PeerList::updateBatmanAdv_value() {
 	char* homeVar = getenv("HOME");
 	std::string fullpath;
 	fullpath.append(homeVar);
-	fullpath.append("/text.txt");
+	fullpath.append("/pathquality.txt");
 
 	lt_log_print(LOG_INFO, "filepath: %s", fullpath.c_str());
 

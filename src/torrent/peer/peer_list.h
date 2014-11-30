@@ -40,6 +40,7 @@
 #include <map>
 #include <torrent/common.h>
 #include <torrent/utils/extents.h>
+#include <rak/socket_address.h>
 
 namespace torrent {
 
@@ -49,6 +50,8 @@ typedef extents<uint32_t, int, 32, 256, 8> ipv4_table;
 
 bool socket_address_less(const sockaddr* s1, const sockaddr* s2);
 
+bool socket_address_same(const sockaddr* s1, const sockaddr* s2);
+
 // Unique key for the address, excluding port numbers etc.
 class LIBTORRENT_EXPORT socket_address_key {
 public:
@@ -57,6 +60,8 @@ public:
   inline static bool is_comparable(const sockaddr* sa);
 
   bool operator < (const socket_address_key& sa) const { return socket_address_less(m_sockaddr, sa.m_sockaddr); }
+
+  bool operator == (const sockaddr* sa) const { return socket_address_same(m_sockaddr, sa); }
 
 private:
   const sockaddr*     m_sockaddr;
@@ -71,6 +76,7 @@ public:
 
   typedef std::multimap<socket_address_key, PeerInfo*>        base_type;
   typedef std::pair<base_type::iterator, base_type::iterator> range_type;
+  typedef std::multimap<int,rak::socket_address*>			  batman_type;
 
   using base_type::value_type;
   using base_type::reference;
@@ -104,7 +110,8 @@ public:
 
   ////////////////////
   std::multimap<int,std::string> batman_Value;
-    /////////////////////
+  batman_type batman_Value2;
+  /////////////////////
 
   PeerInfo*           insert_address(const sockaddr* address, int flags);
 
@@ -118,6 +125,7 @@ public:
   uint32_t            available_list_size() const;
 
   uint32_t            cull_peers(int flags);
+  uint32_t			  cull_byBatmanAdv(int maxPreferred);
 
   const_iterator         begin() const  { return base_type::begin(); }
   const_iterator         end() const    { return base_type::end(); }

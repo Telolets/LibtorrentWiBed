@@ -51,8 +51,8 @@ Tracker::Tracker(TrackerList* parent, const std::string& url, int flags) :
   m_group(0),
   m_url(url),
 
-  m_normal_interval(1800),
-  m_min_interval(600),
+  m_normal_interval(300),
+  m_min_interval(300),
 
   m_latest_event(EVENT_NONE),
   m_latest_new_peers(0),

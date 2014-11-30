@@ -60,6 +60,7 @@ AvailableList::pop_random() {
   return tmp;
 }
 
+/////////////////////////////////////
 AvailableList::value_type
 AvailableList::pop_best(rak::socket_address& batman_address) {
   if (empty())
@@ -81,6 +82,8 @@ AvailableList::pop_best(rak::socket_address& batman_address) {
   return tmp;
 
 }
+
+//////////////////////////////////////
 
 void
 AvailableList::push_back(const rak::socket_address* sa) {

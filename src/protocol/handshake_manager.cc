@@ -122,7 +122,7 @@ HandshakeManager::add_incoming(SocketFd fd, const rak::socket_address& sa) {
     return;
   }
 
-  LT_LOG_SA(INFO, &sa, "Adding incoming connection: fd:%i.", fd.get_fd());
+  LT_LOG_SA(INFO, &sa, "Adding incoming wibed connection: fd:%i.", fd.get_fd());
 
   manager->connection_manager()->inc_socket_count();
 

@@ -294,9 +294,15 @@ DownloadWrapper::receive_tick(uint32_t ticks) {
   // Trigger culling of PeerInfo's every hour. This should be called
   // before the is_open check to ensure that stopped torrents reduce
   // their memory usage.
-  if (ticks % 120 == 0)
+  if (ticks % 10 == 0)
 //   if (ticks % 1 == 0)
     m_main->peer_list()->cull_peers(PeerList::cull_old | PeerList::cull_keep_interesting);
+
+  /////////////////////
+  //Run every 1 minute
+  if (ticks % 2 == 0)
+	  m_main->peer_list()->cull_byBatmanAdv(m_main->connection_list()->max_size());
+  ////////////////////
 
   if (!info()->is_open())
     return;

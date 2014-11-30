@@ -54,10 +54,9 @@
 #include "peer_info.h"
 #include "peer_list.h"
 
-//////
 #include <fstream>
 #include <sstream>
-//////
+
 
 #define LT_LOG_EVENTS(log_fmt, ...)                                     \
   lt_log_print_info(LOG_PEER_LIST_EVENTS, m_info, "peer_list", log_fmt, __VA_ARGS__);
@@ -85,6 +84,17 @@ socket_address_less(const sockaddr* s1, const sockaddr* s2) {
     // the ipv6 address.
     throw internal_error("socket_address_key(...) tried to compare an invalid family type.");
 }
+
+///////////////////
+bool
+socket_address_same(const sockaddr* s1, const sockaddr* s2) {
+	const rak::socket_address* sa1 = rak::socket_address::cast_from(s1);
+	const rak::socket_address* sa2 = rak::socket_address::cast_from(s2);
+
+	return sa1->address_str() == sa2->address_str();
+}
+
+///////////////////
 
 inline bool
 socket_address_key::is_comparable(const sockaddr* sa) {
@@ -168,44 +178,127 @@ PeerList::insert_address(const sockaddr* sa, int flags) {
 //////////////////////////
 void
 PeerList::updateBatmanAdv_value() {
-	/*
-	std::ifstream infile("~/Downloads/value.txt");
 
-	lt_log_print(LOG_INFO, "inside the function");
-	int a;
-	std::string b;
-	char c;
+	std::map<int,std::string> temp;
+	const std::string* addr;
+	rak::socket_address* socketAddress = new rak::socket_address();
 
+
+	std::ifstream infile;
+	char* homeVar = getenv("HOME");
+	std::string fullpath;
+	fullpath.append(homeVar);
+	fullpath.append("/text.txt");
+
+	lt_log_print(LOG_INFO, "filepath: %s", fullpath.c_str());
+
+	infile.open(fullpath.c_str());
 
 	std::string line;
 	while (std::getline(infile, line))
 	{
-		std::istringstream iss(line);
-		if (!(iss >> a >> c >> b) && (c == ',')) { break; } // error
+	    std::istringstream iss(line);
+	    std::string IP;
+	    int PathQuality;
+	    if (!(iss >> IP >> PathQuality)) { break; } // error
 
-		lt_log_print(LOG_INFO, "%s with value of %d", b.c_str(), a);
+	    temp.insert(std::pair<int,std::string>(255-PathQuality,IP));
+	}
 
-		batmanValue.insert(std::pair<int,std::string>(a,b));
+	/*
+	temp.insert(std::pair<int,std::string>(255-240,"178.62.14.182"));
+	temp.insert(std::pair<int,std::string>(255-230,"178.62.161.201"));
+	temp.insert(std::pair<int,std::string>(255-10,"83.172.115.18"));
+	temp.insert(std::pair<int,std::string>(255-150,"83.172.114.61"));
+    */
 
-	}*/
+	batman_Value2.clear();
 
-        if(batman_Value.empty())
-        {
+	for(std::map<int,std::string>::iterator itt = temp.begin(); itt != temp.end(); itt++) {
+		addr = new std::string(itt->second);
+		socketAddress = new rak::socket_address();
+		socketAddress->set_address_str(*addr);
+		batman_Value2.insert(std::pair<int,rak::socket_address*>(itt->first, socketAddress));
+	}
+	//}
 
-	        batman_Value.insert(std::pair<int,std::string>(255-254,"83.172.114.9")); //Debian-reimu
+	for(std::multimap<int,rak::socket_address*>::iterator it = batman_Value2.begin(); it != batman_Value2.end(); it++)
+	{
+		lt_log_print(LOG_INFO, "batValue2 -- %s with value of %d", (*it).second->address_str().c_str(), (*it).first);
+	}
 
-	        batman_Value.insert(std::pair<int,std::string>(255-100,"83.172.114.81")); //joao
+	/*
+	if(batman_Value.empty())
+	{
 
-            batman_Value.insert(std::pair<int,std::string>(255-1,"83.172.115.18")); //ken
-        }
+		batman_Value.insert(std::pair<int,std::string>(255-250,"83.172.114.9")); //Debian-reimu
 
-	//assume no more duplicate IP
+		batman_Value.insert(std::pair<int,std::string>(255-120,"83.172.114.237")); //foti
+
+		batman_Value.insert(std::pair<int,std::string>(255-100,"83.179.10.160")); //seckin
+
+		batman_Value.insert(std::pair<int,std::string>(255-185,"83.172.114.61")); //igor
+
+		batman_Value.insert(std::pair<int,std::string>(255-185,"83.172.115.73")); //?
+
+		batman_Value.insert(std::pair<int,std::string>(255-90,"83.172.115.18")); //ken
+
+	}
+
+	//assume no duplicate IP
+
 	for(std::multimap<int,std::string>::iterator it = batman_Value.begin(); it != batman_Value.end(); it++)
 	{
 		lt_log_print(LOG_INFO, "%s with value of %d", (*it).second.c_str(), (*it).first);
 	}
-
+	*/
 }
+
+uint32_t
+PeerList::cull_byBatmanAdv(int maxPreferred)
+{
+	lt_log_print(LOG_INFO, "PeerList::cull_byBatmanAdv, maxPreferred %d", maxPreferred);
+
+	//if current peer list is small then we don't need to do any preference
+	if(base_type::size() <= maxPreferred)
+		return 0;
+
+
+	//block all peers
+	for (iterator itr = base_type::begin(); itr != base_type::end(); itr++) {
+		itr->second->unset_flags(PeerInfo::flag_preferred);
+	}
+
+
+	updateBatmanAdv_value();
+
+	batman_type::iterator it = batman_Value2.begin();
+
+	int count = 0;
+	while(count < maxPreferred)
+	{
+		base_type::const_iterator pit = begin();
+		while(pit != end())
+		{
+			if(pit->first == it->second->c_sockaddr())
+			{
+				pit->second->set_flags(PeerInfo::flag_preferred);
+				lt_log_print(LOG_INFO, "cull_byBatmanAdv: %s flag is set to preferred", it->second->address_str().c_str());
+				break;
+			}
+			pit++;
+		}
+
+		if(pit == end())
+			lt_log_print(LOG_INFO, "cull_byBatmanAdv: %s is missing", it->second->address_str().c_str());
+
+		it++;
+		count++;
+	}
+
+	return 0;
+}
+
 ///////////////////////////
 
 
@@ -414,6 +507,10 @@ PeerList::cull_peers(int flags) {
   uint32_t counter = 0;
   uint32_t timer;
 
+  ///////////////
+   lt_log_print(LOG_INFO, "PeerList::cull_peers");
+  //////////////
+
   if (flags & cull_old)
     timer = cachedTime.seconds() - 24 * 60 * 60;
   else
@@ -423,7 +520,6 @@ PeerList::cull_peers(int flags) {
     if (itr->second->is_connected() ||
         itr->second->transfer_counter() != 0 || // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         itr->second->last_connection() >= timer ||
-
         (flags & cull_keep_interesting && 
          (itr->second->failed_counter() != 0 || itr->second->is_blocked()))) {
       itr++;
@@ -439,6 +535,9 @@ PeerList::cull_peers(int flags) {
     iterator tmp = itr++;
     PeerInfo* peerInfo = tmp->second;
 
+    ///////////////
+       lt_log_print(LOG_INFO, "PeerList::cull_peers, auto remove this node: %s", rak::socket_address::cast_from(peerInfo->socket_address())->address_str().c_str());
+    //////////////
     base_type::erase(tmp);
     delete peerInfo;
 

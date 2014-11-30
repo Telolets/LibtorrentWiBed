@@ -168,6 +168,10 @@ Manager::receive_tick() {
   m_resourceManager->receive_tick();
   m_chunkManager->periodic_sync();
 
+  /////////////
+  lt_log_print(LOG_INFO, "Manager::Receive Tick");
+  ////////////
+
   // To ensure the downloads get equal chance over time at using
   // various limited resources, like sockets for handshakes, cycle the
   // group in reverse order.

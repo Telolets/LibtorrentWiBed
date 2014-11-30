@@ -148,7 +148,7 @@ protected:
 
   void                set_group(uint32_t v)                 { m_group = v; }
 
-  void                set_normal_interval(int v)            { m_normal_interval = std::min(std::max(600, v), 3600); }
+  void                set_normal_interval(int v)            { m_normal_interval = std::min(std::max(300, v), 300); }
   void                set_min_interval(int v)               { m_min_interval = std::min(std::max(300, v), 1800); }
 
   int                 m_flags;

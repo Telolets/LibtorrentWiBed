@@ -336,7 +336,7 @@ DownloadMain::receive_connect_peers() {
     alist->clear();
   }
 
-    peer_list()->updateBatmanAdv_value();
+  peer_list()->updateBatmanAdv_value();
 
   ///////////////////////
     std::string s("");
@@ -344,34 +344,24 @@ DownloadMain::receive_connect_peers() {
     {
       std::stringstream out;
       out << (*itr).port();
-
-  	  s += (*itr).address_str();
-  	  s += ":";
-  	  s += out.str();
-  	  s += " -- ";
-
+  	  s += (*itr).address_str() + ":" + out.str() + " -- ";
     }
-
     lt_log_print(LOG_INFO, "Available list before choosing: %s", s.c_str());
   /////////////////////////
 
     ///////////////////////
     s = "";
-        for (PeerList::const_iterator itr = peer_list()->begin(); itr != peer_list()->end(); ++itr)
-        {
-        	const rak::socket_address* soc2 = rak::socket_address::cast_from((*itr).second->socket_address());
 
-          std::stringstream out;
-          out << soc2->port();
+    for (PeerList::const_iterator itr = peer_list()->begin(); itr != peer_list()->end(); ++itr)
+	{
+		const rak::socket_address* soc2 = rak::socket_address::cast_from((*itr).second->socket_address());
 
-      	  s += soc2->address_str();
-      	  s += ":";
-      	  s += out.str();
-      	  s += " -- ";
+	  std::stringstream out;
+	  out << soc2->port();
+	  s += soc2->address_str() + ":" + out.str() + " -- ";
+	}
 
-        }
-
-        lt_log_print(LOG_INFO, "Peer list before choosing: %s", s.c_str());
+	lt_log_print(LOG_INFO, "Peer list before choosing: %s", s.c_str());
       /////////////////////////
 
   /*
@@ -384,29 +374,33 @@ DownloadMain::receive_connect_peers() {
 
   */
 
-  while (!peer_list()->available_list()->empty() &&
-		  !peer_list()->batman_Value.empty() &&  ////////////////ADDED
-		 manager->connection_manager()->can_connect() &&
-		 connection_list()->size() < connection_list()->min_size() &&
-		 connection_list()->size() + m_slotCountHandshakes(this) < connection_list()->max_size()) {
+	PeerList::batman_type::iterator it = peer_list()->batman_Value2.begin();
 
-	std::multimap<int,std::string>::iterator it = peer_list()->batman_Value.begin();
-	rak::socket_address* ba = new rak::socket_address();
-	ba->set_address_str(it->second);
+	while (!peer_list()->available_list()->empty() &&
+			!peer_list()->batman_Value2.empty() &&  ////////////////ADDED
+			manager->connection_manager()->can_connect() &&
+			!(it == peer_list()->batman_Value2.end())
+		 //connection_list()->size() < connection_list()->min_size() &&
+		 //connection_list()->size() + m_slotCountHandshakes(this) < connection_list()->max_size()
+			) {
 
-	lt_log_print(LOG_INFO, "###current best choice--> %s", it->second.c_str());
+		rak::socket_address sa = peer_list()->available_list()->pop_best(*(it->second));
 
-	rak::socket_address sa = peer_list()->available_list()->pop_best(*ba);
-	peer_list()->batman_Value.erase(it);
+		if(sa.is_valid()) {
+			lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
 
-    ////////////////////
-    lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
-    lt_log_print(LOG_INFO, "Batman_value size left --> %d", peer_list()->batman_Value.size());
-    ////////////////////
+			//PeerList::batman_type::iterator save = it;
+			//save++;
+			//peer_list()->batman_Value2.erase(it);
+			//it = save;
 
-    if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
-      m_slotStartHandshake(sa, this);
-  }
+			if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
+						m_slotStartHandshake(sa, this);
+		}
+
+		it++;
+		//lt_log_print(LOG_INFO, "Batman_value size left --> %d", peer_list()->batman_Value2.size());
+	}
 
   ///////////////////////
   s = "";
@@ -485,6 +479,7 @@ DownloadMain::do_peer_exchange() {
   }
 
   // Return if we don't really want to do anything?
+
 
   ProtocolExtension::PEXList current;
 

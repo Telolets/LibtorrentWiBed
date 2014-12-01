@@ -93,7 +93,6 @@ socket_address_same(const sockaddr* s1, const sockaddr* s2) {
 
 	return sa1->address_str() == sa2->address_str();
 }
-
 ///////////////////
 
 inline bool
@@ -179,16 +178,20 @@ PeerList::insert_address(const sockaddr* sa, int flags) {
 void
 PeerList::updateBatmanAdv_value() {
 
-	std::map<int,std::string> temp;
+	std::multimap<int,std::string> temp;
 	const std::string* addr;
 	rak::socket_address* socketAddress = new rak::socket_address();
-
-
 	std::ifstream infile;
 	char* homeVar = getenv("HOME");
 	std::string fullpath;
+
 	fullpath.append(homeVar);
-	fullpath.append("/pathquality.txt");
+	fullpath.append("/wibed_batctl.sh");
+	system(fullpath.c_str());
+
+	fullpath = "";
+	fullpath.append(homeVar);
+	fullpath.append("/wibed_pathquality.txt");
 
 	lt_log_print(LOG_INFO, "filepath: %s", fullpath.c_str());
 
@@ -212,46 +215,21 @@ PeerList::updateBatmanAdv_value() {
 	temp.insert(std::pair<int,std::string>(255-150,"83.172.114.61"));
     */
 
-	batman_Value2.clear();
+	batmanValue_List.clear();
 
 	for(std::map<int,std::string>::iterator itt = temp.begin(); itt != temp.end(); itt++) {
 		addr = new std::string(itt->second);
 		socketAddress = new rak::socket_address();
 		socketAddress->set_address_str(*addr);
-		batman_Value2.insert(std::pair<int,rak::socket_address*>(itt->first, socketAddress));
+		batmanValue_List.insert(std::pair<int,rak::socket_address*>(itt->first, socketAddress));
 	}
 	//}
 
-	for(std::multimap<int,rak::socket_address*>::iterator it = batman_Value2.begin(); it != batman_Value2.end(); it++)
+	for(std::multimap<int,rak::socket_address*>::iterator it = batmanValue_List.begin(); it != batmanValue_List.end(); it++)
 	{
 		lt_log_print(LOG_INFO, "batValue2 -- %s with value of %d", (*it).second->address_str().c_str(), (*it).first);
 	}
 
-	/*
-	if(batman_Value.empty())
-	{
-
-		batman_Value.insert(std::pair<int,std::string>(255-250,"83.172.114.9")); //Debian-reimu
-
-		batman_Value.insert(std::pair<int,std::string>(255-120,"83.172.114.237")); //foti
-
-		batman_Value.insert(std::pair<int,std::string>(255-100,"83.179.10.160")); //seckin
-
-		batman_Value.insert(std::pair<int,std::string>(255-185,"83.172.114.61")); //igor
-
-		batman_Value.insert(std::pair<int,std::string>(255-185,"83.172.115.73")); //?
-
-		batman_Value.insert(std::pair<int,std::string>(255-90,"83.172.115.18")); //ken
-
-	}
-
-	//assume no duplicate IP
-
-	for(std::multimap<int,std::string>::iterator it = batman_Value.begin(); it != batman_Value.end(); it++)
-	{
-		lt_log_print(LOG_INFO, "%s with value of %d", (*it).second.c_str(), (*it).first);
-	}
-	*/
 }
 
 uint32_t
@@ -272,7 +250,7 @@ PeerList::cull_byBatmanAdv(int maxPreferred)
 
 	updateBatmanAdv_value();
 
-	batman_type::iterator it = batman_Value2.begin();
+	batman_type::iterator it = batmanValue_List.begin();
 
 	int count = 0;
 	while(count < maxPreferred)

@@ -109,8 +109,7 @@ public:
   ~PeerList();
 
   ////////////////////
-  std::multimap<int,std::string> batman_Value;
-  batman_type batman_Value2;
+  batman_type batmanValue_List;
   /////////////////////
 
   PeerInfo*           insert_address(const sockaddr* address, int flags);

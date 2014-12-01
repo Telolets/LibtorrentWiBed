@@ -187,10 +187,13 @@ PeerList::updateBatmanAdv_value() {
 
 	fullpath.append(homeVar);
 	fullpath.append("/wibed_batctl.sh");
-	system(fullpath.c_str());
 
-	fullpath = "";
-	fullpath.append(homeVar);
+	infile.open(fullpath.c_str());
+	if(infile)
+		system(fullpath.c_str());
+	infile.close();
+
+	fullpath = homeVar;
 	fullpath.append("/wibed_pathquality.txt");
 
 	lt_log_print(LOG_INFO, "filepath: %s", fullpath.c_str());
@@ -208,12 +211,7 @@ PeerList::updateBatmanAdv_value() {
 	    temp.insert(std::pair<int,std::string>(255-PathQuality,IP));
 	}
 
-	/*
-	temp.insert(std::pair<int,std::string>(255-240,"178.62.14.182"));
-	temp.insert(std::pair<int,std::string>(255-230,"178.62.161.201"));
-	temp.insert(std::pair<int,std::string>(255-10,"83.172.115.18"));
-	temp.insert(std::pair<int,std::string>(255-150,"83.172.114.61"));
-    */
+	infile.close();
 
 	batmanValue_List.clear();
 
@@ -223,7 +221,7 @@ PeerList::updateBatmanAdv_value() {
 		socketAddress->set_address_str(*addr);
 		batmanValue_List.insert(std::pair<int,rak::socket_address*>(itt->first, socketAddress));
 	}
-	//}
+
 
 	for(std::multimap<int,rak::socket_address*>::iterator it = batmanValue_List.begin(); it != batmanValue_List.end(); it++)
 	{

@@ -479,6 +479,28 @@ PeerList::disconnected(iterator itr, int flags) {
 }
 
 uint32_t
+PeerList::clear_Peerlist() {
+
+	uint32_t counter = 0;
+
+	for (iterator itr = base_type::begin(); itr != base_type::end(); ) {
+	    if (itr->second->is_connected()) {
+	      itr++;
+	      continue;
+	    }
+
+	    iterator tmp = itr++;
+	    PeerInfo* peerInfo = tmp->second;
+
+	    base_type::erase(tmp);
+	    delete peerInfo;
+	    counter++;
+	}
+
+	return counter;
+}
+
+uint32_t
 PeerList::cull_peers(int flags) {
   uint32_t counter = 0;
   uint32_t timer;

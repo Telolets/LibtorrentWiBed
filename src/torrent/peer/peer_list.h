@@ -125,6 +125,7 @@ public:
 
   uint32_t            cull_peers(int flags);
   uint32_t			  cull_byBatmanAdv(int maxPreferred);
+  uint32_t			  clear_Peerlist();
 
   const_iterator         begin() const  { return base_type::begin(); }
   const_iterator         end() const    { return base_type::end(); }

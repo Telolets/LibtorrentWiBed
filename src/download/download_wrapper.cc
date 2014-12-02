@@ -256,25 +256,20 @@ DownloadWrapper::receive_storage_error(const std::string& str) {
 
 uint32_t
 DownloadWrapper::receive_tracker_success(AddressList* l) {
+
+  //This is very dangerous, but we need to make sure it keep doing handshake as fast as possible
+  uint32_t removed_Peers = m_main->peer_list()->clear_Peerlist();
+  lt_log_print(LOG_INFO, "Peers removed: %d", removed_Peers);
+
   uint32_t inserted = m_main->peer_list()->insert_available(l);
 
   ////////////////////////
-  //m_main->stop();
-  //lt_log_print(LOG_INFO, "DOWNLOAD PAUSED");
-
   std::string s("");
 
-  for (AddressList::const_iterator itr = l->begin(); itr != l->end(); ++itr)
-    {
-  	  s += (*itr).address_str();
-  	  s += " -- ";
+  for (AddressList::const_iterator itr = l->begin(); itr != l->end(); ++itr) {
+  	  s += (*itr).address_str() + " -- ";
     }
-
   lt_log_print(LOG_INFO, "Address list collected from tracker: %s", s.c_str());
-
-
-  //m_main->start();
-  //lt_log_print(LOG_INFO, "DOWNLOAD RESUMED");
   //////////////////////////
 
   m_main->receive_connect_peers();
@@ -294,21 +289,20 @@ DownloadWrapper::receive_tick(uint32_t ticks) {
   // Trigger culling of PeerInfo's every hour. This should be called
   // before the is_open check to ensure that stopped torrents reduce
   // their memory usage.
-  if (ticks % 10 == 0)
-//   if (ticks % 1 == 0)
+  if (ticks % 1 == 0)
     m_main->peer_list()->cull_peers(PeerList::cull_old | PeerList::cull_keep_interesting);
 
   /////////////////////
   //Run every 1 minute
-  if (ticks % 2 == 0)
-	  m_main->peer_list()->cull_byBatmanAdv(m_main->connection_list()->max_size());
+  //if (ticks % 2 == 0)
+  //  m_main->peer_list()->cull_byBatmanAdv(m_main->connection_list()->max_size());
   ////////////////////
 
   if (!info()->is_open())
     return;
 
   // Every 2 minutes.
-  if (ticks % 4 == 0) {
+  if (ticks % 2 == 0) {
     if (info()->is_active()) {
       if (info()->is_pex_enabled()) {
         m_main->do_peer_exchange();

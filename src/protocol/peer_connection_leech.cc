@@ -117,7 +117,7 @@ PeerConnection<type>::update_interested() {
 template<Download::ConnectionType type>
 bool
 PeerConnection<type>::receive_keepalive() {
-  if (cachedTime - m_timeLastRead > rak::timer::from_seconds(240))
+  if (cachedTime - m_timeLastRead > rak::timer::from_seconds(40))
     return false;
 
   // There's no point in adding ourselves to the write poll if the

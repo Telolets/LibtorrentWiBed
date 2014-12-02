@@ -216,7 +216,7 @@ void DownloadMain::start() {
   chunk_list()->set_flags(ChunkList::flag_active);
 
   m_delegator.set_aggressive(false);
-  update_endgame();  
+  update_endgame();
 
   receive_connect_peers();
 }  
@@ -374,9 +374,11 @@ DownloadMain::receive_connect_peers() {
 
 	PeerList::batman_type::iterator it = peer_list()->batmanValue_List.begin();
 
-	uint32_t handshakeLimit = 2;
+	uint32_t handshakeLimit = 3;
 	uint32_t indexList = 0;
+	uint32_t counter = 0;
 
+	/*
 	while (!peer_list()->available_list()->empty() &&
 			!peer_list()->batmanValue_List.empty() &&
 			manager->connection_manager()->can_connect() &&
@@ -393,9 +395,30 @@ DownloadMain::receive_connect_peers() {
 
 		if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
 			m_slotStartHandshake(sa, this);
+
 		}
 		indexList++;
-	}
+	}*/
+
+	while (!peer_list()->available_list()->empty() &&
+				!peer_list()->batmanValue_List.empty() &&
+				manager->connection_manager()->can_connect() &&
+				!(it == peer_list()->batmanValue_List.end()) &&
+				counter < handshakeLimit
+				) {
+
+			rak::socket_address sa = peer_list()->available_list()->pop_best(*(it)->second);
+
+			if(sa.is_valid()) {
+				lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
+
+				if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
+					m_slotStartHandshake(sa, this);
+
+				counter++;
+			}
+			it++;
+		}
 
   s = "";
   for (ConnectionList::iterator itr = connection_list()->begin(); itr != connection_list()->end(); ++itr) {

@@ -375,23 +375,26 @@ DownloadMain::receive_connect_peers() {
 	PeerList::batman_type::iterator it = peer_list()->batmanValue_List.begin();
 
 	uint32_t handshakeLimit = 2;
+	uint32_t indexList = 0;
+
 	while (!peer_list()->available_list()->empty() &&
 			!peer_list()->batmanValue_List.empty() &&
 			manager->connection_manager()->can_connect() &&
-			!(it == peer_list()->batmanValue_List.end()) &&
-			handshakeLimit > 0
+			//!(it == peer_list()->batmanValue_List.end()) &&
+			indexList < handshakeLimit
 			) {
 
-		rak::socket_address sa = peer_list()->available_list()->pop_best(*(it->second));
+		std::advance(it, indexList);
+
+		rak::socket_address sa = peer_list()->available_list()->pop_best(*(it)->second);
 
 		if(sa.is_valid()) {
 			lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
 
 		if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
 			m_slotStartHandshake(sa, this);
-		handshakeLimit--;
 		}
-		it++;
+		indexList++;
 	}
 
   s = "";

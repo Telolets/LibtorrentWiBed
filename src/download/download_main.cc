@@ -378,7 +378,6 @@ DownloadMain::receive_connect_peers() {
 	uint32_t indexList = 0;
 	uint32_t counter = 0;
 
-	/*
 	while (!peer_list()->available_list()->empty() &&
 			!peer_list()->batmanValue_List.empty() &&
 			manager->connection_manager()->can_connect() &&
@@ -393,13 +392,14 @@ DownloadMain::receive_connect_peers() {
 		if(sa.is_valid()) {
 			lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
 
-		if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
-			m_slotStartHandshake(sa, this);
+			if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
+				m_slotStartHandshake(sa, this);
 
-		}
+			}
 		indexList++;
-	}*/
+	}
 
+	/*
 	while (!peer_list()->available_list()->empty() &&
 				!peer_list()->batmanValue_List.empty() &&
 				manager->connection_manager()->can_connect() &&
@@ -418,7 +418,7 @@ DownloadMain::receive_connect_peers() {
 				counter++;
 			}
 			it++;
-		}
+		}*/
 
   s = "";
   for (ConnectionList::iterator itr = connection_list()->begin(); itr != connection_list()->end(); ++itr) {

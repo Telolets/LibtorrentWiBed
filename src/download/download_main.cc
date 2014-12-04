@@ -39,6 +39,7 @@
 #include <cstring>
 #include <sstream>
 #include <limits>
+#include <cmath>
 
 #include "data/chunk_list.h"
 #include "protocol/extensions.h"
@@ -323,6 +324,53 @@ DownloadMain::add_peer(const rak::socket_address& sa) {
 }
 
 void
+DownloadMain::add_peer_manual() {
+
+	std::map<std::string, uint16_t> newPeerList;
+	newPeerList.insert(std::pair<std::string, int>("192.168.10.10", 6890));
+	newPeerList.insert(std::pair<std::string, int>("192.168.10.11", 6890));
+	newPeerList.insert(std::pair<std::string, int>("192.168.10.12", 6890));
+	newPeerList.insert(std::pair<std::string, int>("192.168.10.13", 6890));
+	newPeerList.insert(std::pair<std::string, int>("192.168.10.14", 6890));
+
+
+	PeerList::batman_type::iterator bit = peer_list()->batmanValue_List.begin();
+	float handshakeLimit = std::sqrt(peer_list()->batmanValue_List.size());
+	uint32_t indexList = 0;
+	uint32_t counter = 0;
+
+	while (manager->connection_manager()->can_connect() &&
+			!newPeerList.empty() &&
+			!peer_list()->batmanValue_List.empty() &&
+			peer_list()->batmanValue_List.size() >= handshakeLimit &&
+			indexList < handshakeLimit
+			) {
+
+		std::advance(bit, indexList);
+
+		std::map<std::string, uint16_t>::iterator pit = newPeerList.find((*bit).second->address_str());
+		if(pit != newPeerList.end())
+		{
+			rak::socket_address sa;
+			sa.set_address_str(pit->first);
+			sa.set_port(pit->second);
+
+			if(sa.is_valid()) {
+						lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
+
+						if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
+							m_slotStartHandshake(sa, this);
+
+						}
+					indexList++;
+		}
+
+
+	}
+
+}
+
+void
 DownloadMain::receive_connect_peers() {
   if (!info()->is_active())
     return;
@@ -335,8 +383,6 @@ DownloadMain::receive_connect_peers() {
     peer_list()->insert_available(alist);
     alist->clear();
   }
-
-  peer_list()->updateBatmanAdv_value();
 
   ///////////////////////
     std::string s("");
@@ -374,7 +420,8 @@ DownloadMain::receive_connect_peers() {
 
 	PeerList::batman_type::iterator it = peer_list()->batmanValue_List.begin();
 
-	uint32_t handshakeLimit = 3;
+	//uint32_t handshakeLimit = 3;
+	float handshakeLimit = std::sqrt(peer_list()->batmanValue_List.size());
 	uint32_t indexList = 0;
 	uint32_t counter = 0;
 

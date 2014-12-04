@@ -141,6 +141,7 @@ public:
   void                slot_hash_check_add(SlotHashCheckAdd s)      { m_slotHashCheckAdd = s; }
 
   void                add_peer(const rak::socket_address& sa);
+  void                add_peer_manual();
 
   void                receive_connect_peers();
   void                receive_chunk_done(unsigned int index);

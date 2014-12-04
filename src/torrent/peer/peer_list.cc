@@ -225,7 +225,7 @@ PeerList::updateBatmanAdv_value() {
 
 	for(std::multimap<int,rak::socket_address*>::iterator it = batmanValue_List.begin(); it != batmanValue_List.end(); it++)
 	{
-		lt_log_print(LOG_INFO, "batValue2 -- %s with value of %d", (*it).second->address_str().c_str(), (*it).first);
+		lt_log_print(LOG_INFO, "batValue -- %s with value of %d", (*it).second->address_str().c_str(), (*it).first);
 	}
 
 }
@@ -534,7 +534,7 @@ PeerList::cull_peers(int flags) {
     PeerInfo* peerInfo = tmp->second;
 
     ///////////////
-       lt_log_print(LOG_INFO, "PeerList::cull_peers, auto remove this node: %s", rak::socket_address::cast_from(peerInfo->socket_address())->address_str().c_str());
+    //lt_log_print(LOG_INFO, "PeerList::cull_peers, auto remove this node: %s", rak::socket_address::cast_from(peerInfo->socket_address())->address_str().c_str());
     //////////////
     base_type::erase(tmp);
     delete peerInfo;

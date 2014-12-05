@@ -344,7 +344,7 @@ DownloadMain::add_peer_manual() {
 			!peer_list()->batmanValue_List.empty() &&
 			peer_list()->batmanValue_List.size() >= handshakeLimit &&
 			indexList < handshakeLimit
-			) {
+			){
 
 		std::advance(bit, indexList);
 
@@ -356,16 +356,13 @@ DownloadMain::add_peer_manual() {
 			sa.set_port(pit->second);
 
 			if(sa.is_valid()) {
-						lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
+				lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
 
-						if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
-							m_slotStartHandshake(sa, this);
-
-						}
-					indexList++;
+				if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
+					m_slotStartHandshake(sa, this);
+			}
 		}
-
-
+		indexList++;
 	}
 
 }
@@ -407,16 +404,6 @@ DownloadMain::receive_connect_peers() {
 
 	lt_log_print(LOG_INFO, "PeerList before choosing: %s", s.c_str());
       /////////////////////////
-
-  /*
-
-  while (!peer_list()->available_list()->empty() &&
-         manager->connection_manager()->can_connect() &&
-         connection_list()->size() < connection_list()->min_size() &&
-         connection_list()->size() + m_slotCountHandshakes(this) < connection_list()->max_size()) {
-    rak::socket_address sa = peer_list()->available_list()->pop_random();
-
-  */
 
 	PeerList::batman_type::iterator it = peer_list()->batmanValue_List.begin();
 

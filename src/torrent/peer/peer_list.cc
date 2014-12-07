@@ -186,7 +186,7 @@ PeerList::updateBatmanAdv_value() {
 	std::string fullpath;
 
 	fullpath.append(homeVar);
-	fullpath.append("/wibed_batctl.sh");
+	fullpath.append("/scripts/wibed_batctl.sh");
 
 	infile.open(fullpath.c_str());
 	if(infile)
@@ -194,7 +194,7 @@ PeerList::updateBatmanAdv_value() {
 	infile.close();
 
 	fullpath = homeVar;
-	fullpath.append("/wibed_pathquality.txt");
+	fullpath.append("/scripts/wibed_pathquality.txt");
 
 	lt_log_print(LOG_INFO, "filepath: %s", fullpath.c_str());
 
@@ -205,8 +205,9 @@ PeerList::updateBatmanAdv_value() {
 	{
 	    std::istringstream iss(line);
 	    std::string IP;
+	    uint16_t Port;
 	    int PathQuality;
-	    if (!(iss >> IP >> PathQuality)) { break; } // error
+	    if (!(iss >> IP >> Port >> PathQuality)) { break; }
 
 	    temp.insert(std::pair<int,std::string>(255-PathQuality,IP));
 	}

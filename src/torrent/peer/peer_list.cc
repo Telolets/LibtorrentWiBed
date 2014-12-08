@@ -194,7 +194,7 @@ PeerList::updateBatmanAdv_value() {
 	infile.close();
 
 	fullpath = homeVar;
-	fullpath.append("/scripts/wibed_pathquality.txt");
+	fullpath.append("/scripts/PQuality");
 
 	lt_log_print(LOG_INFO, "filepath: %s", fullpath.c_str());
 

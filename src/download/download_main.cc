@@ -409,8 +409,6 @@ DownloadMain::receive_connect_peers() {
 	lt_log_print(LOG_INFO, "PeerList before choosing: %s", s.c_str());
       /////////////////////////
 
-	PeerList::batman_type::iterator it = peer_list()->batmanValue_List.begin();
-
 	//uint32_t handshakeLimit = 3;
 	float handshakeLimit = std::sqrt(peer_list()->batmanValue_List.size());
 	uint32_t indexList = 0;
@@ -423,7 +421,8 @@ DownloadMain::receive_connect_peers() {
 			indexList < std::floor(handshakeLimit)
 			) {
 
-		std::advance(it, 1);
+		PeerList::batman_type::iterator it = peer_list()->batmanValue_List.begin();
+		std::advance(it, indexList);
 
 		rak::socket_address sa = peer_list()->available_list()->pop_best(*(it)->second);
 

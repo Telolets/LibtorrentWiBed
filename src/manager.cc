@@ -184,7 +184,7 @@ Manager::receive_tick() {
 
   // If you change the interval, make sure the keepalives gets
   // triggered every 120 seconds.
-  priority_queue_insert(&taskScheduler, &m_taskTick, (cachedTime + rak::timer::from_seconds(30)).round_seconds());
+  priority_queue_insert(&taskScheduler, &m_taskTick, (cachedTime + rak::timer::from_seconds(5)).round_seconds());
 }
 
 }

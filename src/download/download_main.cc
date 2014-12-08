@@ -219,7 +219,8 @@ void DownloadMain::start() {
   m_delegator.set_aggressive(false);
   update_endgame();
 
-  receive_connect_peers();
+  //receive_connect_peers();
+  add_peer_manual();
 }  
 
 void
@@ -326,42 +327,55 @@ DownloadMain::add_peer(const rak::socket_address& sa) {
 void
 DownloadMain::add_peer_manual() {
 
-	std::map<std::string, uint16_t> newPeerList;
-	newPeerList.insert(std::pair<std::string, int>("192.168.10.10", 6890));
-	newPeerList.insert(std::pair<std::string, int>("192.168.10.11", 6890));
-	newPeerList.insert(std::pair<std::string, int>("192.168.10.12", 6890));
-	newPeerList.insert(std::pair<std::string, int>("192.168.10.13", 6890));
-	newPeerList.insert(std::pair<std::string, int>("192.168.10.14", 6890));
+	///////////////////////
+	    std::string s("");
+	    for (PeerList::batman_type::const_iterator itr = peer_list()->batmanValue_List.begin(); itr != peer_list()->batmanValue_List.end(); ++itr)
+	    {
+	      std::stringstream out;
+	      out << itr->second->port();
+	  	  s += itr->second->address_str() + ":" + out.str() + " -- ";
+	    }
+	    lt_log_print(LOG_INFO, "BatmanValue PeerList before choosing: %s", s.c_str());
 
+	    s = "";
 
-	PeerList::batman_type::iterator bit = peer_list()->batmanValue_List.begin();
+	    for (PeerList::const_iterator itr = peer_list()->begin(); itr != peer_list()->end(); ++itr)
+		{
+		  const rak::socket_address* soc2 = rak::socket_address::cast_from((*itr).second->socket_address());
+		  std::stringstream out;
+		  out << soc2->port();
+		  s += soc2->address_str() + ":" + out.str() + " -- ";
+		}
+
+		lt_log_print(LOG_INFO, "PeerList before choosing: %s", s.c_str());
+    /////////////////////////
+
 	float handshakeLimit = std::sqrt(peer_list()->batmanValue_List.size());
 	uint32_t indexList = 0;
 	uint32_t counter = 0;
 
 	while (manager->connection_manager()->can_connect() &&
-			!newPeerList.empty() &&
 			!peer_list()->batmanValue_List.empty() &&
 			peer_list()->batmanValue_List.size() >= handshakeLimit &&
-			indexList < handshakeLimit
+			indexList < std::floor(handshakeLimit)
 			){
 
+		PeerList::batman_type::iterator bit = peer_list()->batmanValue_List.begin();
 		std::advance(bit, indexList);
 
-		std::map<std::string, uint16_t>::iterator pit = newPeerList.find((*bit).second->address_str());
-		if(pit != newPeerList.end())
+		if(bit != peer_list()->batmanValue_List.end())
 		{
-			rak::socket_address sa;
-			sa.set_address_str(pit->first);
-			sa.set_port(pit->second);
+			if(bit->second->is_valid()) {
 
-			if(sa.is_valid()) {
+				rak::socket_address sa = *(bit->second);
+
 				lt_log_print(LOG_INFO, "!!This peer has been chosen --> %s", sa.address_str().c_str());
 
 				if (connection_list()->find(sa.c_sockaddr()) == connection_list()->end())
 					m_slotStartHandshake(sa, this);
 			}
 		}
+
 		indexList++;
 	}
 

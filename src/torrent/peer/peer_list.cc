@@ -200,6 +200,8 @@ PeerList::updateBatmanAdv_value() {
 
 	infile.open(fullpath.c_str());
 
+	batmanValue_List.clear();
+
 	std::string line;
 	while (std::getline(infile, line))
 	{
@@ -210,19 +212,25 @@ PeerList::updateBatmanAdv_value() {
 	    if (!(iss >> IP >> Port >> PathQuality)) { break; }
 
 	    temp.insert(std::pair<int,std::string>(255-PathQuality,IP));
+
+	    ///addBatmanValue Directly
+	    addr = new std::string(IP);
+		socketAddress = new rak::socket_address();
+		socketAddress->set_address_str(*addr);
+		socketAddress->set_port(Port);
+		batmanValue_List.insert(std::pair<int,rak::socket_address*>(255-PathQuality, socketAddress));
 	}
 
 	infile.close();
 
-	batmanValue_List.clear();
-
+	/*
 	for(std::map<int,std::string>::iterator itt = temp.begin(); itt != temp.end(); itt++) {
 		addr = new std::string(itt->second);
 		socketAddress = new rak::socket_address();
 		socketAddress->set_address_str(*addr);
 		batmanValue_List.insert(std::pair<int,rak::socket_address*>(itt->first, socketAddress));
 	}
-
+	*/
 
 	for(std::multimap<int,rak::socket_address*>::iterator it = batmanValue_List.begin(); it != batmanValue_List.end(); it++)
 	{
@@ -482,10 +490,15 @@ PeerList::disconnected(iterator itr, int flags) {
 uint32_t
 PeerList::clear_Peerlist() {
 
+	///////////////
+	lt_log_print(LOG_INFO, "PeerList::clear_Peerlist");
+	//////////////
+
 	uint32_t counter = 0;
 
 	for (iterator itr = base_type::begin(); itr != base_type::end(); ) {
-	    if (itr->second->is_connected()) {
+	    if (itr->second->is_connected() ||
+	    	itr->second-> transfer_counter() != 0) {
 	      itr++;
 	      continue;
 	    }

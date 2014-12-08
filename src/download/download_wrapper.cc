@@ -259,8 +259,8 @@ DownloadWrapper::receive_tracker_success(AddressList* l) {
 
   //To make sure fresh data from tracker are received and update the peerList
   //we remove every current idle peer.
-  uint32_t removed_Peers = m_main->peer_list()->clear_Peerlist();
-  lt_log_print(LOG_INFO, "Peers removed: %d", removed_Peers);
+  //uint32_t removed_Peers = m_main->peer_list()->clear_Peerlist();
+  //lt_log_print(LOG_INFO, "Peers removed: %d", removed_Peers);
 
   uint32_t inserted = m_main->peer_list()->insert_available(l);
 
@@ -272,7 +272,7 @@ DownloadWrapper::receive_tracker_success(AddressList* l) {
   lt_log_print(LOG_INFO, "Address list collected from tracker: %s", s.c_str());
   //////////////////////////
 
-  m_main->receive_connect_peers();
+  //m_main->receive_connect_peers();
   m_main->receive_tracker_success();
 
   rak::slot_list_call(info()->signal_tracker_success());
@@ -292,11 +292,12 @@ DownloadWrapper::receive_tick(uint32_t ticks) {
   if (ticks % 1 == 0)
     m_main->peer_list()->cull_peers(PeerList::cull_old | PeerList::cull_keep_interesting);
 
-  ///////////////////
-  //Run every 1 minute
-  if (ticks % 1 == 0)
-    m_main->peer_list()->updateBatmanAdv_value();
-  //////////////////
+  //To make sure fresh data from tracker are received and update the peerList
+  //we remove every current idle peer.
+  if (ticks % 1 == 0) {
+    uint32_t removed_Peers = m_main->peer_list()->clear_Peerlist();
+    lt_log_print(LOG_INFO, "Peers removed: %d", removed_Peers);
+  }
 
   if (!info()->is_open())
     return;
@@ -329,7 +330,9 @@ DownloadWrapper::receive_tick(uint32_t ticks) {
                                              rak::mem_ref(&DownloadMain::have_queue_type::value_type::first))).base(),
                    haveQueue->end());
 
-  m_main->receive_connect_peers();
+  //m_main->receive_connect_peers();
+  m_main->peer_list()->updateBatmanAdv_value();
+  m_main->add_peer_manual();
 }
 
 void

@@ -372,6 +372,10 @@ DownloadMain::receive_connect_peers() {
   if (!info()->is_active())
     return;
 
+  //if this is seeder, don't do any handshakes except asked
+  if(file_list()->is_done())
+	  return;
+
   // TODO: Is this actually going to be used?
   AddressList* alist = peer_list()->available_list()->buffer();
 
@@ -416,10 +420,10 @@ DownloadMain::receive_connect_peers() {
 			!peer_list()->available_list()->empty() &&
 			!peer_list()->batmanValue_List.empty() &&
 			peer_list()->batmanValue_List.size() >= handshakeLimit &&
-			indexList < handshakeLimit
+			indexList < std::floor(handshakeLimit)
 			) {
 
-		std::advance(it, indexList);
+		std::advance(it, 1);
 
 		rak::socket_address sa = peer_list()->available_list()->pop_best(*(it)->second);
 
@@ -432,7 +436,7 @@ DownloadMain::receive_connect_peers() {
 			}
 		indexList++;
 	}
-
+/*
 	//add extra for random connection which are the last node in batctl
 	if(manager->connection_manager()->can_connect() &&
 			!peer_list()->available_list()->empty() &&
@@ -448,7 +452,7 @@ DownloadMain::receive_connect_peers() {
 				m_slotStartHandshake(sa, this);
 		}
 	}
-
+*/
   s = "";
   for (ConnectionList::iterator itr = connection_list()->begin(); itr != connection_list()->end(); ++itr) {
 	  const rak::socket_address* soc = rak::socket_address::cast_from((*itr)->address());

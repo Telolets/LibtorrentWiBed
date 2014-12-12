@@ -186,7 +186,7 @@ PeerList::updateBatmanAdv_value() {
 	std::string fullpath;
 
 	fullpath.append(homeVar);
-	fullpath.append("/scripts/wibed_batctl.sh");
+	fullpath.append("/scripts/gen_PQuality.sh");
 
 	infile.open(fullpath.c_str());
 	if(infile)
@@ -223,14 +223,7 @@ PeerList::updateBatmanAdv_value() {
 
 	infile.close();
 
-	/*
-	for(std::map<int,std::string>::iterator itt = temp.begin(); itt != temp.end(); itt++) {
-		addr = new std::string(itt->second);
-		socketAddress = new rak::socket_address();
-		socketAddress->set_address_str(*addr);
-		batmanValue_List.insert(std::pair<int,rak::socket_address*>(itt->first, socketAddress));
-	}
-	*/
+
 
 	for(std::multimap<int,rak::socket_address*>::iterator it = batmanValue_List.begin(); it != batmanValue_List.end(); it++)
 	{

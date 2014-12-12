@@ -211,6 +211,9 @@ private:
 
   rak::priority_item  m_delayDisconnectPeers;
   rak::priority_item  m_taskTrackerRequest;
+
+  bool				  random_selected;
+  uint32_t			  random_value;
 };
 
 }

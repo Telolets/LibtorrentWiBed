@@ -131,6 +131,8 @@ DownloadMain::DownloadMain() :
   m_chunkList->set_data(file_list()->mutable_data());
   m_chunkList->slot_create_chunk() = tr1::bind(&FileList::create_chunk_index, file_list(), tr1::placeholders::_1, tr1::placeholders::_2);
   m_chunkList->slot_free_diskspace() = tr1::bind(&FileList::free_diskspace, file_list());
+
+  random_selected = false;
 }
 
 DownloadMain::~DownloadMain() {
@@ -378,6 +380,37 @@ DownloadMain::add_peer_manual() {
 
 		indexList++;
 	}
+
+
+	//select random number based on range
+	while(!random_selected &&
+			random_value < handshakeLimit){
+		//upperlimit: size-1,
+		//lowerlimit: handshake limit
+		random_value = std::rand() % ((peer_list()->batmanValue_List.size()-1) - (int)std::floor(handshakeLimit));
+		random_selected = true;
+	}
+
+	//add extra for random connection which selected randomly from leftover nodes
+	if(manager->connection_manager()->can_connect() &&
+			!peer_list()->available_list()->empty() &&
+			!peer_list()->batmanValue_List.empty()) {
+		PeerList::batman_type::iterator rit = peer_list()->batmanValue_List.begin();
+		std::advance(rit, random_value);
+
+		//rak::socket_address sad = peer_list()->available_list()->pop_best(*(rit)->second);
+
+		if(rit != peer_list()->batmanValue_List.end() && rit->second->is_valid()) {
+
+			rak::socket_address sad = *(rit->second);
+
+			lt_log_print(LOG_INFO, "!!Last peer for random connection is chosen --> %s", sad.address_str().c_str());
+
+			if (connection_list()->find(sad.c_sockaddr()) == connection_list()->end())
+				m_slotStartHandshake(sad, this);
+		}
+	}
+
 
 }
 

@@ -387,7 +387,7 @@ DownloadMain::add_peer_manual() {
 			random_value < handshakeLimit){
 		//upperlimit: size-1,
 		//lowerlimit: handshake limit
-		random_value = std::rand() % ((peer_list()->batmanValue_List.size()-1) - (int)std::floor(handshakeLimit));
+		random_value = (int)std::floor(handshakeLimit) + (std::rand() % (peer_list()->batmanValue_List.size() - (int)std::floor(handshakeLimit)));
 		random_selected = true;
 	}
 
